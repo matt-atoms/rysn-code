@@ -1,9 +1,65 @@
 /* RYSN — site-wide custom CSS.
    All custom stylesheet rules for the Webflow storefront live here.
-   Organize by section comments as features are added.
    Targets existing Relume/Webflow classes or data attributes — never introduces new class names. */
 
-/* --- Pipeline smoke test (delete after verified) ------------------------- */
+/* --- Pipeline smoke test (leave until first real feature ships) ---------- */
 :root {
   --rysn-hello: "css-pipeline-ok";
+}
+
+/* --- Homepage hero ------------------------------------------------------- */
+[data-rysn="hero"] {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+[data-rysn="hero-bg"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+[data-rysn="hero-content"] {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+[data-rysn="hero-content"] h1 {
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+[data-rysn="hero-content"] p {
+  max-width: 42rem;
+  margin: 1.5rem auto 0;
+}
+
+[data-rysn="hero-hint-bar"] {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--_primitives---colors--brand-amber);
+  color: var(--_primitives---colors--brand-beige);
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  [data-rysn="hero-hint-bar"] {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+  }
 }
