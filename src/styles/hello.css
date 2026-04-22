@@ -1,6 +1,0 @@
-/* Smoke test for the rysn-code → jsDelivr → Webflow CSS pipeline.
-   Sets a custom property we can verify via DevTools getComputedStyle.
-   Delete this file after we've verified the pipeline works. */
-:root {
-  --rysn-hello: "css-pipeline-ok";
-}

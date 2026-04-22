@@ -1,0 +1,9 @@
+/* RYSN — site-wide custom CSS.
+   All custom stylesheet rules for the Webflow storefront live here.
+   Organize by section comments as features are added.
+   Targets existing Relume/Webflow classes or data attributes — never introduces new class names. */
+
+/* --- Pipeline smoke test (delete after verified) ------------------------- */
+:root {
+  --rysn-hello: "css-pipeline-ok";
+}
