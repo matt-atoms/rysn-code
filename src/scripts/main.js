@@ -41,7 +41,21 @@
 // Initializes any [data-swiper-group] container into a Swiper slider.
 // Requires the Swiper bundle to be loaded BEFORE this script in Webflow
 // Site Settings (head/body custom code).
+//
+// Per-slider overrides (read from either the group or the wrap element):
+//   data-show-mobile   slidesPerView at  <  768px  (default 1.1)
+//   data-show-tablet   slidesPerView at >= 768px  (default 2.25)
+//   data-show-desktop  slidesPerView at >= 992px  (default 3)
+// Values are parsed as floats so peeks like "3.25" work.
 function initSwiperSlider() {
+  const DEFAULTS = { mobile: 1.1, tablet: 2.25, desktop: 3 };
+
+  const readShow = (group, wrap, key) => {
+    const raw = group.getAttribute(`data-show-${key}`) ?? wrap.getAttribute(`data-show-${key}`);
+    const parsed = raw == null ? NaN : parseFloat(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULTS[key];
+  };
+
   const swiperSliderGroups = document.querySelectorAll("[data-swiper-group]");
 
   swiperSliderGroups.forEach((swiperGroup) => {
@@ -52,18 +66,16 @@ function initSwiperSlider() {
     const nextButton = swiperGroup.querySelector("[data-swiper-next]");
 
     const swiper = new Swiper(swiperSliderWrap, {
-      slidesPerView: 1.1,
+      slidesPerView: readShow(swiperGroup, swiperSliderWrap, 'mobile'),
       speed: 600,
       mousewheel: false,
       grabCursor: true,
       breakpoints: {
-        // tablet: >= 768px → 2 cards + peek
         768: {
-          slidesPerView: 2.25,
+          slidesPerView: readShow(swiperGroup, swiperSliderWrap, 'tablet'),
         },
-        // desktop: >= 992px → 3 cards + peek
         992: {
-          slidesPerView: 3,
+          slidesPerView: readShow(swiperGroup, swiperSliderWrap, 'desktop'),
         }
       },
       navigation: {
