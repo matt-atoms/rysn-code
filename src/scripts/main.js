@@ -43,18 +43,18 @@ function initSwiperSlider() {
     const nextButton = swiperGroup.querySelector("[data-swiper-next]");
 
     const swiper = new Swiper(swiperSliderWrap, {
-      slidesPerView: 1,
+      slidesPerView: 1.1,
       speed: 600,
       mousewheel: false,
       grabCursor: true,
       breakpoints: {
-        // tablet: >= 768px → 2 cards
+        // tablet: >= 768px → 2 cards + peek
         768: {
-          slidesPerView: 2,
+          slidesPerView: 2.25,
         },
-        // desktop: >= 992px → 3 cards
+        // desktop: >= 992px → 3 cards + peek
         992: {
-          slidesPerView: 3,
+          slidesPerView: 3.25,
         }
       },
       navigation: {
