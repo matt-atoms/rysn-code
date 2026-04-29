@@ -45,7 +45,7 @@ function initSwiperSlider() {
     const swiper = new Swiper(swiperSliderWrap, {
       slidesPerView: 1,
       speed: 600,
-      mousewheel: true,
+      mousewheel: false,
       grabCursor: true,
       breakpoints: {
         // tablet: >= 768px → 2 cards
