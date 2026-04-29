@@ -100,3 +100,31 @@ body{
     border-right: 0;
   }
 }
+
+/* --- Before/After Split Slider (Osmo Supply) ------------------------------
+   Pseudo-element ring + hover scale on the splitter handle. Pseudo-elements
+   can't be authored in Webflow Designer, so this lives here. */
+img::selection {
+  background: none;
+}
+
+.splitter-handle__center::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 100em;
+  opacity: 1;
+  border: 1px solid white;
+  transition: all 0.4s cubic-bezier(0.35, 1, 0.6, 1);
+}
+
+.splitter-handle:hover .splitter-handle__center::after {
+  width: 130%;
+  height: 130%;
+  opacity: 0.5;
+}

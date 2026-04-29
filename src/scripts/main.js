@@ -134,3 +134,54 @@ function initAccordionCSS() {
 document.addEventListener('DOMContentLoaded', () => {
   initAccordionCSS();
 });
+
+// --- Before/After Split Slider (Osmo Supply) --------------------------------
+// Drag the [data-splitter="handle"] inside a [data-splitter="wrap"] to reveal
+// more or less of the [data-splitter="after"] image via animated clip-path.
+// Optional `data-splitter-initial` (0–100) sets the starting position; defaults
+// to 50.
+//
+// Requires GSAP and the Draggable plugin to be loaded BEFORE this script in
+// Webflow Site Settings (head/body custom code).
+function initBeforeAfterSplitSlider() {
+  if (typeof gsap === 'undefined' || typeof Draggable === 'undefined') return;
+  gsap.registerPlugin(Draggable);
+
+  const splitters = document.querySelectorAll('[data-splitter="wrap"]');
+
+  const setupSplitter = (splitter) => {
+    const handle = splitter.querySelector('[data-splitter="handle"]');
+    const after = splitter.querySelector('[data-splitter="after"]');
+
+    let bounds = splitter.getBoundingClientRect();
+    let currentPercent = parseFloat(splitter.getAttribute('data-splitter-initial')) || 50;
+
+    const setPositions = (percent) => {
+      bounds = splitter.getBoundingClientRect();
+      const positionX = (percent / 100) * bounds.width;
+      gsap.set(handle, { x: positionX, left: 'unset' });
+      gsap.set(after, { clipPath: `inset(0 0 0 ${percent}%)` });
+    };
+
+    setPositions(currentPercent);
+
+    Draggable.create(handle, {
+      type: 'x',
+      bounds: splitter,
+      cursor: 'ew-resize',
+      activeCursor: 'grabbing',
+      onDrag() {
+        currentPercent = (this.x / bounds.width) * 100;
+        gsap.set(after, { clipPath: `inset(0 0 0 ${currentPercent}%)` });
+      },
+    });
+
+    window.addEventListener('resize', () => setPositions(currentPercent));
+  };
+
+  splitters.forEach(setupSplitter);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initBeforeAfterSplitSlider();
+});
