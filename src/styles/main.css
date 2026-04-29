@@ -39,3 +39,34 @@
     transition: none;
   }
 }
+
+/* --- Swiper slider (Osmo Supply) ------------------------------------------
+   Custom CSS for the Swiper.js slider resource. Pagination tokens, slide gap
+   pattern, navigation button transition, and disabled-state hide. */
+body{
+  --swiper-pagination-color: currentColor;
+  --swiper-pagination-bottom: auto;
+  --swiper-pagination-bullet-size: 0.5em;
+  --swiper-pagination-bullet-inactive-color: currentColor;
+  --swiper-pagination-bullet-inactive-opacity: 0.15;
+  --swiper-pagination-bullet-horizontal-gap: 0.25em;
+  --swiper-wrapper-transition-timing-function: cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.swiper-slide{
+  --gap: 1.25em;
+  padding-right: var(--gap);
+}
+
+.swiper-slide:last-of-type{
+  margin-right: calc(-1 * var(--gap));
+}
+
+.swiper-navigation__button{
+  transition: opacity 0.2s ease;
+}
+
+.swiper-button-disabled{
+  opacity: 0;
+  pointer-events: none;
+}
