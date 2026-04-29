@@ -236,17 +236,20 @@ document.addEventListener('smootify:loaded', function () {
   const container = document.querySelector('.sm-ix-cart_interaction-container');
   if (!container) return;
   const backdrop = container.querySelector('.sm-ix-cart_backdrop');
-  if (!backdrop) return;
+  const panel = container.querySelector('.sm-ix-cart_relative-container');
+  if (!backdrop || !panel) return;
 
   const openTrigger = document.querySelector('[data-trigger="open"].navbar14_link.is-cart');
   const DURATION = 0.5;
-  const EASE = 'power2.inOut';
+  const EASE = 'power3.out';
+  const EASE_OUT = 'power3.in';
 
   let isOpen = false;
   let scrollPosition = 0;
 
   gsap.set(container, { display: 'none' });
   gsap.set(backdrop, { autoAlpha: 0 });
+  gsap.set(panel, { xPercent: 100, force3D: true });
 
   const lockScroll = () => {
     scrollPosition = window.scrollY;
@@ -266,22 +269,23 @@ document.addEventListener('smootify:loaded', function () {
     if (isOpen) return;
     isOpen = true;
     lockScroll();
-    gsap.set(container, { display: 'flex' });
-    gsap.to(backdrop, { autoAlpha: 1, duration: DURATION, ease: EASE });
+    gsap.timeline()
+      .set(container, { display: 'flex' })
+      .to(backdrop, { autoAlpha: 1, duration: DURATION, ease: EASE }, 0)
+      .to(panel, { xPercent: 0, duration: DURATION, ease: EASE }, 0);
   };
 
   const closeCart = () => {
     if (!isOpen) return;
     isOpen = false;
-    gsap.to(backdrop, {
-      autoAlpha: 0,
-      duration: DURATION,
-      ease: EASE,
+    gsap.timeline({
       onComplete: () => {
         gsap.set(container, { display: 'none' });
         unlockScroll();
       },
-    });
+    })
+      .to(backdrop, { autoAlpha: 0, duration: DURATION, ease: EASE_OUT }, 0)
+      .to(panel, { xPercent: 100, duration: DURATION, ease: EASE_OUT }, 0);
   };
 
   // Capture-phase short-circuits any leftover IX2 binding on the trigger.
