@@ -8,3 +8,34 @@
 :root {
   --rysn-hello: "css-pipeline-ok";
 }
+
+/* --- Navbar scroll-state transitions --------------------------------------
+   Smooths the visual swap between default (transparent + white text) and
+   `is-scrolled` (solid + black text) states. Targets the nav container and
+   its color-changing descendants only, so existing Webflow hover transitions
+   on links stay intact. */
+.navbar_container,
+.navbar_container .navbar1_link,
+.navbar_container .rysn_logo,
+.navbar_container .menu-icon1_line-top,
+.navbar_container .menu-icon1_line-middle,
+.navbar_container .menu-icon1_line-middle-inner,
+.navbar_container .menu-icon1_line-bottom {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease,
+    fill 300ms ease,
+    padding 300ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar_container,
+  .navbar_container .navbar1_link,
+  .navbar_container .rysn_logo,
+  .navbar_container .menu-icon1_line-top,
+  .navbar_container .menu-icon1_line-middle,
+  .navbar_container .menu-icon1_line-middle-inner,
+  .navbar_container .menu-icon1_line-bottom {
+    transition: none;
+  }
+}
