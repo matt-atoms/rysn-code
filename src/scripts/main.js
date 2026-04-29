@@ -54,7 +54,7 @@ function initSwiperSlider() {
         },
         // desktop: >= 992px → 3 cards + peek
         992: {
-          slidesPerView: 3.25,
+          slidesPerView: 3,
         }
       },
       navigation: {
