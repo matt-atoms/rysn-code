@@ -221,47 +221,91 @@ document.addEventListener('smootify:loaded', function () {
   }
 });
 
-// --- Auto-open cart on add-to-cart -----------------------------------------
-document.addEventListener('smootify:added_to_cart', function () {
-  var cartTrigger = document.querySelector('[data-trigger="open"].navbar14_link.is-cart');
-  if (cartTrigger) cartTrigger.click();
-});
-
-// --- Empty-cart close button fallback --------------------------------------
-// The empty-state close button doesn't natively close the cart; route its
-// click through the overlay click instead. Attach once per element.
-document.addEventListener('smootify:cart_updated', function () {
-  var emptyClose = document.querySelector('.sm-wf-cart_empty-container [data-trigger="close"]');
-  if (!emptyClose || emptyClose.dataset.fixApplied) return;
-  emptyClose.dataset.fixApplied = 'true';
-  emptyClose.addEventListener('click', function () {
-    var overlay = document.querySelector('.sm-ix-cart_overlay');
-    if (overlay) overlay.click();
-  });
-});
-
-// --- Lock body scroll while cart drawer is open ----------------------------
-// Watches the cart container's inline display style and freezes the body at
-// the current scroll position when the drawer opens, restoring on close.
+// --- Cart drawer (GSAP) ----------------------------------------------------
+// Drives the Smootify cart drawer with GSAP instead of Webflow IX2 (which
+// doesn't fire on programmatic clicks). Backdrop fade in/out only — panel
+// snaps to its resting position. Open via:
+//   - clicking [data-trigger="open"].navbar14_link.is-cart
+//   - smootify:added_to_cart event
+//   - window.RYSNCart.open()
+// Close via any [data-trigger="close"] inside the drawer (backdrop or close
+// button), Escape, or window.RYSNCart.close(). Locks body scroll while open.
 (function () {
-  var scrollPosition = 0;
-  var cartContainer = document.querySelector('.sm-ix-cart_interaction-container');
-  if (!cartContainer) return;
+  if (typeof gsap === 'undefined') return;
 
-  new MutationObserver(function () {
-    var isOpen = cartContainer.style.display === 'flex';
-    if (isOpen) {
-      scrollPosition = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = '-' + scrollPosition + 'px';
-      document.body.style.width = '100%';
-    } else {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, scrollPosition);
+  const container = document.querySelector('.sm-ix-cart_interaction-container');
+  if (!container) return;
+  const backdrop = container.querySelector('.sm-ix-cart_backdrop');
+  if (!backdrop) return;
+
+  const openTrigger = document.querySelector('[data-trigger="open"].navbar14_link.is-cart');
+  const DURATION = 0.5;
+  const EASE = 'power2.inOut';
+
+  let isOpen = false;
+  let scrollPosition = 0;
+
+  gsap.set(container, { display: 'none' });
+  gsap.set(backdrop, { autoAlpha: 0 });
+
+  const lockScroll = () => {
+    scrollPosition = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + scrollPosition + 'px';
+    document.body.style.width = '100%';
+  };
+
+  const unlockScroll = () => {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    window.scrollTo(0, scrollPosition);
+  };
+
+  const openCart = () => {
+    if (isOpen) return;
+    isOpen = true;
+    lockScroll();
+    gsap.set(container, { display: 'flex' });
+    gsap.to(backdrop, { autoAlpha: 1, duration: DURATION, ease: EASE });
+  };
+
+  const closeCart = () => {
+    if (!isOpen) return;
+    isOpen = false;
+    gsap.to(backdrop, {
+      autoAlpha: 0,
+      duration: DURATION,
+      ease: EASE,
+      onComplete: () => {
+        gsap.set(container, { display: 'none' });
+        unlockScroll();
+      },
+    });
+  };
+
+  // Capture-phase short-circuits any leftover IX2 binding on the trigger.
+  openTrigger?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openCart();
+  }, true);
+
+  container.addEventListener('click', (e) => {
+    if (e.target.closest('[data-trigger="close"]')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      closeCart();
     }
-  }).observe(cartContainer, { attributes: true, attributeFilter: ['style'] });
+  }, true);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) closeCart();
+  });
+
+  document.addEventListener('smootify:added_to_cart', openCart);
+
+  window.RYSNCart = { open: openCart, close: closeCart };
 })();
 
 // --- Canteen deposit refresh on cart update --------------------------------
