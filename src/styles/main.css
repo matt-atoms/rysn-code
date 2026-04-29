@@ -70,3 +70,8 @@ body{
   opacity: 0;
   pointer-events: none;
 }
+
+/* Per-slider gap overrides (Figma-spec) */
+.testimonials_slider-group .swiper-slide{
+  --gap: 1.5em;
+}
