@@ -185,3 +185,90 @@ function initBeforeAfterSplitSlider() {
 document.addEventListener('DOMContentLoaded', () => {
   initBeforeAfterSplitSlider();
 });
+
+// --- iOS viewport height fix -----------------------------------------------
+// Sets `--viewport-height` on :root to the visualViewport height (or
+// innerHeight fallback), and updates it when iOS toolbars expand/collapse.
+// Use `var(--viewport-height)` instead of `100vh` to avoid the iOS jump.
+function setViewportHeight() {
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty('--viewport-height', vh + 'px');
+}
+setViewportHeight();
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', setViewportHeight);
+}
+
+// --- Smootify analytics (consent-gated) ------------------------------------
+// On production, only enables analytics once the visitor has granted consent
+// via Shopify's customerPrivacy API. Re-checks on every consent update.
+// On staging where customerPrivacy isn't loaded, enables analytics directly.
+document.addEventListener('smootify:loaded', function () {
+  if (window.Shopify && window.Shopify.customerPrivacy) {
+    var privacy = window.Shopify.customerPrivacy;
+
+    if (privacy.analyticsProcessingAllowed()) {
+      Smootify.enableAnalytics(true);
+    }
+
+    document.addEventListener('visitorConsentCollected', function () {
+      if (privacy.analyticsProcessingAllowed()) {
+        Smootify.enableAnalytics(true);
+      }
+    });
+  } else {
+    Smootify.enableAnalytics(true);
+  }
+});
+
+// --- Auto-open cart on add-to-cart -----------------------------------------
+document.addEventListener('smootify:added_to_cart', function () {
+  var cartTrigger = document.querySelector('[data-trigger="open"].navbar14_link.is-cart');
+  if (cartTrigger) cartTrigger.click();
+});
+
+// --- Empty-cart close button fallback --------------------------------------
+// The empty-state close button doesn't natively close the cart; route its
+// click through the overlay click instead. Attach once per element.
+document.addEventListener('smootify:cart_updated', function () {
+  var emptyClose = document.querySelector('.sm-wf-cart_empty-container [data-trigger="close"]');
+  if (!emptyClose || emptyClose.dataset.fixApplied) return;
+  emptyClose.dataset.fixApplied = 'true';
+  emptyClose.addEventListener('click', function () {
+    var overlay = document.querySelector('.sm-ix-cart_overlay');
+    if (overlay) overlay.click();
+  });
+});
+
+// --- Lock body scroll while cart drawer is open ----------------------------
+// Watches the cart container's inline display style and freezes the body at
+// the current scroll position when the drawer opens, restoring on close.
+(function () {
+  var scrollPosition = 0;
+  var cartContainer = document.querySelector('.sm-ix-cart_interaction-container');
+  if (!cartContainer) return;
+
+  new MutationObserver(function () {
+    var isOpen = cartContainer.style.display === 'flex';
+    if (isOpen) {
+      scrollPosition = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + scrollPosition + 'px';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollPosition);
+    }
+  }).observe(cartContainer, { attributes: true, attributeFilter: ['style'] });
+})();
+
+// --- Canteen deposit refresh on cart update --------------------------------
+// If the Canteen (statiegeld) integration is loaded, re-evaluate deposits
+// whenever the Smootify cart changes. No-ops if Canteen isn't on the page.
+document.addEventListener('smootify:cart_updated', function () {
+  if (window.Canteen && typeof window.Canteen.refresh === 'function') {
+    window.Canteen.refresh();
+  }
+});
