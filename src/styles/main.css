@@ -75,3 +75,27 @@ body{
 .testimonials_slider-group .swiper-slide{
   --gap: 1.5em;
 }
+
+/* --- Product grid: drop right border on last card of each row -------------
+   Assumes 3 cols on desktop, 2 cols on tablet, 1 col on mobile (Relume default).
+   `:last-child` covers the trailing item when the count isn't a clean multiple
+   of the column count. */
+@media screen and (min-width: 992px) {
+  .product1_item:nth-child(3n),
+  .product1_item:last-child {
+    border-right: 0;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .product1_item:nth-child(2n),
+  .product1_item:last-child {
+    border-right: 0;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .product1_item {
+    border-right: 0;
+  }
+}
