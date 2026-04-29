@@ -6,9 +6,18 @@
 // Adds `is-scrolled` to `.navbar_container` once the page has scrolled past a
 // small threshold, so the nav can swap from transparent/white-text to
 // solid/black-text. Styling is owned by Webflow (combo class on .navbar_container).
+//
+// Pages without a hero image can opt out of the transparent state by setting
+// `data-nav="scrolled"` on any element (typically the page/body wrapper). The
+// nav then stays in its scrolled state regardless of scroll position.
 (() => {
   const nav = document.querySelector('.navbar_container');
   if (!nav) return;
+
+  if (document.querySelector('[data-nav="scrolled"]')) {
+    nav.classList.add('is-scrolled');
+    return;
+  }
 
   const THRESHOLD = 50;
   let scheduled = false;
