@@ -40,6 +40,14 @@
   }
 }
 
+/* Webflow hard-sets the current-page link to white, which is correct against
+   the transparent top state but invisible once `.is-scrolled` flips the bar
+   light. Restore inheritance in the scrolled state so the active link picks
+   up the same dark color as its siblings. Underline (set by Webflow) stays. */
+.navbar_container.is-scrolled .navbar1_link.w--current {
+  color: inherit;
+}
+
 /* --- Swiper slider (Osmo Supply) ------------------------------------------
    Custom CSS for the Swiper.js slider resource. Pagination tokens, slide gap
    pattern, navigation button transition, and disabled-state hide. */
