@@ -482,32 +482,37 @@ document.addEventListener("DOMContentLoaded", () => {
   initContentRevealScroll();
 });
 
-// --- Scroll-scrubbed image scale (premium imagery) -------------------------
-// Adds a subtle parallax-scale to any element with [data-scrub-scale]. As the
-// element travels through the viewport its scale is tied directly to scroll
-// position, easing from 1 to the configured end value (default 1.08). Best
-// applied to hero shots and full-bleed lifestyle photos. The parent wrapper
-// should typically use overflow:hidden so the scaled image doesn't bleed
-// into surrounding content.
+// --- Scroll parallax (premium imagery) -------------------------------------
+// Adds a vertical parallax drift to any element with [data-parallax]. As the
+// element passes through the viewport it translates from -strength% to
+// +strength% of its own height, tied to scroll position. The image appears
+// to lag slightly behind the page — slower, grounded, editorial.
+//
+// A baseline scale of 1.2 is applied so the translated element always
+// covers its container. The parent wrapper should use overflow:hidden so
+// the scaled image doesn't bleed into surrounding sections.
 //
 // Usage in Webflow Designer (Element Settings → Custom Attributes):
-//   data-scrub-scale             → 1 → 1.08 (default)
-//   data-scrub-scale = "1.15"    → 1 → 1.15
+//   data-parallax           → strength 10 (default — subtle)
+//   data-parallax = "15"    → stronger drift
+//   data-parallax = "5"     → barely-there drift
 //
 // Honors prefers-reduced-motion. ScrollTrigger is already registered by the
 // reveal-on-scroll init above.
-function initScrubScale() {
+function initParallax() {
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
 
-  document.querySelectorAll('[data-scrub-scale]').forEach(el => {
-    const raw = parseFloat(el.getAttribute('data-scrub-scale'));
-    const endScale = Number.isFinite(raw) && raw > 0 ? raw : 1.08;
+  document.querySelectorAll('[data-parallax]').forEach(el => {
+    const raw = parseFloat(el.getAttribute('data-parallax'));
+    const strength = Number.isFinite(raw) ? raw : 10;
+
+    gsap.set(el, { scale: 1.2 });
 
     gsap.fromTo(el,
-      { scale: 1 },
+      { yPercent: -strength },
       {
-        scale: endScale,
+        yPercent: strength,
         ease: 'none',
         scrollTrigger: {
           trigger: el,
@@ -520,4 +525,4 @@ function initScrubScale() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", initScrubScale);
+document.addEventListener("DOMContentLoaded", initParallax);
