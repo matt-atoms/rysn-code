@@ -46,6 +46,18 @@
   }
 }
 
+/* The other nav links inherit color from `.navbar_container` via an explicit
+   `color: inherit` rule from Webflow's utility stylesheet, which produces a
+   "chase" transition that lags the parent's color animation by roughly one
+   transition cycle. The cart link's inner divs have no such rule, so without
+   this their inherited color tracks the parent in real-time and finishes
+   ~300ms ahead of the rest of the nav — visually out of sync. Add the same
+   explicit inherit so the cart adopts the same chase cadence. */
+.navbar_container .navbar14_link.is-cart,
+.navbar_container .navbar14_link.is-cart > * {
+  color: inherit;
+}
+
 /* Webflow hard-sets the current-page link to white, which is correct against
    the transparent top state but invisible once `.is-scrolled` flips the bar
    light. Restore inheritance in the scrolled state so the active link picks
