@@ -481,3 +481,43 @@ function initContentRevealScroll(){
 document.addEventListener("DOMContentLoaded", () => {
   initContentRevealScroll();
 });
+
+// --- Scroll-scrubbed image scale (premium imagery) -------------------------
+// Adds a subtle parallax-scale to any element with [data-scrub-scale]. As the
+// element travels through the viewport its scale is tied directly to scroll
+// position, easing from 1 to the configured end value (default 1.08). Best
+// applied to hero shots and full-bleed lifestyle photos. The parent wrapper
+// should typically use overflow:hidden so the scaled image doesn't bleed
+// into surrounding content.
+//
+// Usage in Webflow Designer (Element Settings → Custom Attributes):
+//   data-scrub-scale             → 1 → 1.08 (default)
+//   data-scrub-scale = "1.15"    → 1 → 1.15
+//
+// Honors prefers-reduced-motion. ScrollTrigger is already registered by the
+// reveal-on-scroll init above.
+function initScrubScale() {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  document.querySelectorAll('[data-scrub-scale]').forEach(el => {
+    const raw = parseFloat(el.getAttribute('data-scrub-scale'));
+    const endScale = Number.isFinite(raw) && raw > 0 ? raw : 1.08;
+
+    gsap.fromTo(el,
+      { scale: 1 },
+      {
+        scale: endScale,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      }
+    );
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initScrubScale);
