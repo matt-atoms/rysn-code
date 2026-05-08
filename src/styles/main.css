@@ -46,16 +46,24 @@
   }
 }
 
-/* The other nav links inherit color from `.navbar_container` via an explicit
-   `color: inherit` rule from Webflow's utility stylesheet, which produces a
-   "chase" transition that lags the parent's color animation by roughly one
-   transition cycle. The cart link's inner divs have no such rule, so without
-   this their inherited color tracks the parent in real-time and finishes
-   ~300ms ahead of the rest of the nav — visually out of sync. Add the same
-   explicit inherit so the cart adopts the same chase cadence. */
+/* The regular nav links transition over an effective ~600ms because their
+   inherited color "chases" the parent navbar's animated color (a quirk of
+   how Webflow's `color: inherit` utility interacts with stacked transitions).
+   The cart link is a plain <div> chain that doesn't chase, so it finished
+   ~300ms ahead and looked out of sync. Match the visible duration by slowing
+   the cart's color/fill transition to 600ms. */
 .navbar_container .navbar14_link.is-cart,
-.navbar_container .navbar14_link.is-cart > * {
-  color: inherit;
+.navbar_container .navbar14_link.is-cart > *,
+.navbar_container .sm-mini-cart_count {
+  transition-duration: 600ms, 600ms, 600ms, 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar_container .navbar14_link.is-cart,
+  .navbar_container .navbar14_link.is-cart > *,
+  .navbar_container .sm-mini-cart_count {
+    transition: none;
+  }
 }
 
 /* Webflow hard-sets the current-page link to white, which is correct against
