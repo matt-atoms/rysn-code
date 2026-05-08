@@ -16,6 +16,8 @@
    on links stay intact. */
 .navbar_container,
 .navbar_container .navbar1_link,
+.navbar_container .navbar14_link.is-cart,
+.navbar_container .sm-mini-cart_count,
 .navbar_container .rysn_logo,
 .navbar_container .menu-icon1_line-top,
 .navbar_container .menu-icon1_line-middle,
@@ -31,6 +33,8 @@
 @media (prefers-reduced-motion: reduce) {
   .navbar_container,
   .navbar_container .navbar1_link,
+  .navbar_container .navbar14_link.is-cart,
+  .navbar_container .sm-mini-cart_count,
   .navbar_container .rysn_logo,
   .navbar_container .menu-icon1_line-top,
   .navbar_container .menu-icon1_line-middle,
